@@ -35,10 +35,12 @@ app.get('/set', function(req, res) {
 
 app.get('/get', function(req, res) {
 	client.get("key", function(err,value){
-		if(value)
+		if(value){
 			res.send(value);
-		else
+		}
+		else{
 			res.send('key has expired');
+		}
 	});
   
 });
@@ -59,7 +61,7 @@ app.post('/upload',[ multer({ dest: './uploads/'}), function(req, res){
    if( req.files.image )
    {
 	   fs.readFile( req.files.image.path, function (err, data) {
-	  		if (err) throw err;
+	  		if (err){ throw err};
         	var img = new Buffer(data).toString('base64');
         	client.lpush('images', img)
 		});
@@ -73,7 +75,7 @@ app.get('/meow', function(req, res) {
       'content-type': 'text/html'
     });
     client.lpop('images', function(err, val) {
-      if (err) throw err;
+      if (err){throw err};
       if (val) {
         res.write("<h1>\n<img src='data:my_pic.jpg;base64," + val + "'/>");
       } else {
