@@ -40,11 +40,13 @@ app.get('/set', function(req, res) {
 
 app.get('/get', function(req, res) {
 	client.get("key", function(err,value){
-		if(value)
+		if(value){
 			res.send(value);
+		}
 		
-		else
+		else{
 			res.send('key has expired');
+		}
 		
 	});
   
