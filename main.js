@@ -4,7 +4,11 @@ var express = require('express')
 var fs      = require('fs')
 var app = express()
 
+
+
 var client = redis.createClient(6379, '127.0.0.1', {})
+
+client.set("alert_canary","alert_off")
 
 var server = app.listen(3000, function () {
 	var host = server.address().address
@@ -27,6 +31,7 @@ app.get('/', function(req, res) {
 });
 
 app.get('/set', function(req, res) {
+	
 	console.log("Setting key value");
 	client.set("key", "this value will destruct in 10 seconds");
 	client.expire("key",10);
@@ -35,12 +40,12 @@ app.get('/set', function(req, res) {
 
 app.get('/get', function(req, res) {
 	client.get("key", function(err,value){
-		if(value){
+		if(value)
 			res.send(value);
-		}
-		else{
+		
+		else
 			res.send('key has expired');
-		}
+		
 	});
   
 });
@@ -55,7 +60,9 @@ app.get('/recent',function(req,res){
 
 
 app.post('/upload',[ multer({ dest: './uploads/'}), function(req, res){
-   console.log(req.body) // form fields
+   console.log(req.body)
+   if(req.body.size > 50000)
+   	client.set("alert_canary","alert_on"); // form fields
    console.log(req.files) // form files
 
    if( req.files.image )
@@ -86,7 +93,7 @@ app.get('/meow', function(req, res) {
   }
 });
 
-app.get('/spawn',function(req,res){
+/*app.get('/spawn',function(req,res){
 	var port = Math.round(Math.random() * (4000 - 3000) + 3000);
 
 	var server = app.listen(port, function () {
@@ -125,3 +132,4 @@ app.get('/destroy',function(req,res){
 		}
 	});
 });
+*/
